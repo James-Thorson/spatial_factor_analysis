@@ -1,9 +1,5 @@
 MakeInput_Fn <-
-function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ErrorDist, ObsModel, VaryingKappa, n_factors, n_stations, Use_REML, Aniso){
-  ##### Create the SPDE/GMRF model, (kappa^2-Delta)(tau x) = W:
-  mesh = inla.mesh.create( Loc[,c('x','y')], plot.delay=NULL, refine=FALSE)
-    #mesh = inla.mesh.create(cbind(Leuk$xcoord, Leuk$ycoord), plot.delay=NULL, refine=list(min.angle=26,max.edge.data=0.08,max.edge.extra=0.2))
-  spde = inla.spde2.matern(mesh,alpha=2)
+function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ErrorDist, ObsModel, VaryingKappa, n_factors, n_stations, Use_REML, Aniso, mesh){
 
   # Pre-processing in R:  Assume 2-Dimensional
   Dset = 1:2
