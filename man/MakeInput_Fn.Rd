@@ -57,6 +57,9 @@ MakeInput_Fn(Version, Y, X, Y_Report = NULL, LastRun = NULL, Loc, isPred, ErrorD
   \item{mesh}{
 %%     ~~Describe \code{Aniso} here~~
 }
+  \item{spde}{
+%%     ~~Describe \code{Aniso} here~~
+}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~

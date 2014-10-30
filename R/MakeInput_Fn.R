@@ -1,5 +1,5 @@
 MakeInput_Fn <-
-function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ErrorDist, ObsModel, VaryingKappa, n_factors, n_stations, Use_REML, Aniso, mesh){
+function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ErrorDist, ObsModel, VaryingKappa, n_factors, n_stations, Use_REML, Aniso, mesh, spde){
 
   # Pre-processing in R:  Assume 2-Dimensional
   Dset = 1:2
