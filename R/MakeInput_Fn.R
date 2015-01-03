@@ -1,5 +1,5 @@
 MakeInput_Fn <-
-function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ErrorDist, ObsModel, VaryingKappa, n_factors, n_stations, Use_REML, Aniso, mesh, spde){
+function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ObsModel, VaryingKappa, n_factors, n_stations, Use_REML, Aniso, mesh, spde){
 
   # Pre-processing in R:  Assume 2-Dimensional
   Dset = 1:2
@@ -67,7 +67,7 @@ function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ErrorDist, Obs
     if(Version %in% "spatial_factor_analysis_v20") Params = list( beta=matrix(Par_last[which(names(Par_last)=="beta")],nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=c(Par_last[which(names(Par_last)=="Psi_val")],rep(1,n_species-n_factors+1)), log_kappa_input=c(Par_last[which(names(Par_last)=="log_kappa_input")],list(NULL,1)[[ifelse(VaryingKappa==0,1,2)]]), ln_VarInfl_NB1=NA, ln_VarInfl_NB2=NA, ln_VarInfl_ZI=NA, Omega_input=matrix(c(Par_best[which(names(Par_best)=="Omega_input")],rep(0,spde$n.spde)),ncol=n_factors))
     if(Version %in% "spatial_factor_analysis_v21") Params = list( ln_H_input=Par_last[which(names(Par_last)=="ln_H_input")], beta=matrix(Par_last[which(names(Par_last)=="beta")],nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=c(Par_last[which(names(Par_last)=="Psi_val")],rep(1,n_species-n_factors+1)), log_kappa_input=c(Par_last[which(names(Par_last)=="log_kappa_input")],list(NULL,1)[[ifelse(VaryingKappa==0,1,2)]]), ln_VarInfl_NB1=NA, ln_VarInfl_NB2=NA, ln_VarInfl_ZI=NA, Omega_input=matrix(c(Par_best[which(names(Par_best)=="Omega_input")],rep(0,spde$n.spde)),ncol=n_factors))
     if(Version %in% "spatial_factor_analysis_v22") Params = list( ln_H_input=Par_best[which(names(Par_best)=="ln_H_input")], beta=matrix(Par_best[which(names(Par_best)=="beta")],nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=c(Par_last[which(names(Par_last)=="Psi_val")],rep(1,n_species-n_factors+1)), log_kappa_input=c(Par_last[which(names(Par_last)=="log_kappa_input")],list(NULL,1)[[ifelse(VaryingKappa==0,1,2)]]), ln_VarInfl_NB1=NA, ln_VarInfl_NB2=NA, ln_VarInfl_ZI=NA, Omega_input=matrix(c(Par_best[which(names(Par_best)=="Omega_input")],rep(0,spde$n.spde)),ncol=n_factors))
-    if(Version %in% "spatial_factor_analysis_v23") Params = list( ln_H_input=Par_best[which(names(Par_best)=="ln_H_input")], beta=matrix(Par_best[which(names(Par_best)=="beta")],nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=c(Par_last[which(names(Par_last)=="Psi_val")],rep(1,n_species-n_factors+1)), log_kappa_input=c(Par_last[which(names(Par_last)=="log_kappa_input")],list(NULL,1)[[ifelse(VaryingKappa==0,1,2)]]), ln_VarInfl_NB1=NA, ln_VarInfl_NB2=NA, ln_VarInfl_ZI=NA, ln_VarInfl_Lognorm=NA, Omega_input=matrix(c(Par_best[which(names(Par_best)=="Omega_input")],rep(0,spde$n.spde)),ncol=n_factors), Lognorm_input=matrix(c(Par_best[which(names(Par_best)=="Lognorm_input")],rep(0,spde$n.spde)),ncol=n_factors))
+    if(Version %in% "spatial_factor_analysis_v23") Params = list( ln_H_input=Par_best[which(names(Par_best)=="ln_H_input")], beta=matrix(Par_best[which(names(Par_best)=="beta")],nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=c(Par_last[which(names(Par_last)=="Psi_val")],rep(1,n_species-n_factors+1)), log_kappa_input=c(Par_last[which(names(Par_last)=="log_kappa_input")],list(NULL,1)[[ifelse(VaryingKappa==0,1,2)]]), ln_VarInfl_NB1=NA, ln_VarInfl_NB2=NA, ln_VarInfl_ZI=NA, ln_VarInfl_Lognorm=NA, Omega_input=matrix(c(Par_best[which(names(Par_best)=="Omega_input")],rep(0,spde$n.spde)),ncol=n_factors), Lognorm_input=matrix(Par_best[which(names(Par_best)=="Lognorm_input")],ncol=n_species))
     if(ObsModel=="Poisson"){
       Params[['ln_VarInfl_NB1']] = rep(-20,n_species)
       Params[['ln_VarInfl_NB2']] = rep(-20,n_species)
@@ -86,7 +86,7 @@ function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ErrorDist, Obs
       Params[['ln_VarInfl_ZI']] = rep(-20,n_species)
       Params[['ln_VarInfl_Lognorm']] = rep(0,n_species)
     }
-    if(ObsModel=="NegBin12"){
+    if(ObsModel=="Lognorm_Pois"){
       Params[['ln_VarInfl_NB1']] = rep(-20,n_species)
       Params[['ln_VarInfl_NB2']] = rep(-20,n_species)
       Params[['ln_VarInfl_ZI']] = rep(-20,n_species)
