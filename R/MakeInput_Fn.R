@@ -195,7 +195,7 @@ function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ObsModel, Vary
   }
   # Declare random
   Random = c("Omega_input")
-  if(Version %in% c("spatial_factor_analysis_v23") ) Random = c(Random, "Lognorm_input")
+  if(Version %in% c("spatial_factor_analysis_v23","spatial_factor_analysis_v24") ) Random = c(Random, "Lognorm_input")
   if(Use_REML==TRUE) Random = c(Random, "beta", "ln_VarInfl_NB0", "ln_VarInfl_NB1", "ln_VarInfl_NB2", "ln_VarInfl_ZI", "ln_VarInfl_Lognorm")
     
   # Return
