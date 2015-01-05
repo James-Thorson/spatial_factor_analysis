@@ -51,7 +51,8 @@ Type objective_function<Type>::operator() ()
 
   using namespace density;
   int i,j;
-  Type g=0;
+  Type jnll = 0;
+  vector<Type> jnll_pred(n_species);
   
   matrix<Type> H(2,2);
   H(0,0) = exp(ln_H_input(0));
@@ -114,7 +115,6 @@ Type objective_function<Type>::operator() ()
     G2_aniso = G1_aniso * G0_inv * G1_aniso; 
   }
   
-  vector<Type> h(n_species);
   vector<Type> log_tau(n_factors);
   matrix<Type> Omega(n_i,n_factors);
   using namespace density;
@@ -122,7 +122,7 @@ Type objective_function<Type>::operator() ()
   for (int k=0;k<n_factors;k++){
     if(Aniso==0) Q = kappa4(k)*G0 + Type(2.0)*kappa2(k)*G1 + G2;
     if(Aniso==1) Q = kappa4(k)*G0 + Type(2.0)*kappa2(k)*G1_aniso + G2_aniso;
-    g += GMRF(Q)(Omega_input.col(k));
+    jnll += GMRF(Q)(Omega_input.col(k));
     if(Aniso==0) log_tau(k) = log(1 / (exp(log_kappa(k)) * sqrt(4*3.141592)) );  // Ensures that MargSD = 1
     if(Aniso==1) log_tau(k) = log(1 / (exp(log_kappa(k)) * sqrt(4*3.141592*sqrt(H(0,0)*H(1,1)-H(0,1)*H(1,0)))) );  // Ensures that MargSD = 1
     for(int k2=0;k2<n_i;k2++) Omega(k2,k) = Omega_input(k2,k) / exp(log_tau(k));
@@ -145,12 +145,12 @@ Type objective_function<Type>::operator() ()
   if( Options_Vec(0)==1 | Options_Vec(0)==2 ){
     for(int i=0;i<n_species;i++){
     for(int j=0;j<n_stations;j++){
-      g -= dnorm( Lognorm_input(j,i), Type(0.0), exp(ln_VarInfl_Lognorm(i)), true );
+      jnll -= dnorm( Lognorm_input(j,i), Type(0.0), exp(ln_VarInfl_Lognorm(i)), true );
     }}
     // Jacobian for log-transformation (only necessary if using REML to integrate across ln_VarInfl_Lognorm)
     if( Options_Vec(0)==2 ){ 
       for(int i=0;i<n_species;i++){
-        g -= ln_VarInfl_Lognorm(i);
+        jnll -= ln_VarInfl_Lognorm(i);
       }
     }
   }
@@ -163,7 +163,7 @@ Type objective_function<Type>::operator() ()
   lin_pred = X * beta; 
   for(int i=0;i<n_species;i++){
     //lin_pred = X * beta.col(i).matrix();
-    h(i) = 0;
+    jnll_pred(i) = 0;
     for(int j=0;j<n_stations;j++){
       if(NAind(j,i) < 0.5){
         // Predictor
@@ -177,18 +177,18 @@ Type objective_function<Type>::operator() ()
         // Likelihood
         Type var_y = exp(ln_VarInfl_NB0(i)) + exp(pred_tmp)*(1.0+exp(ln_VarInfl_NB1(i))) + exp(2.0*pred_tmp)*exp(ln_VarInfl_NB2(i));
         if(ErrorDist==0){
-          g -= dpois( Y(j,i), exp(pred_tmp), true ) * (1-isPred(j)); 
-          h(i) -= dpois( Y(j,i), exp(pred_tmp), true ) * isPred(j); 
+          jnll -= dpois( Y(j,i), exp(pred_tmp), true ) * (1-isPred(j)); 
+          jnll_pred(i) -= dpois( Y(j,i), exp(pred_tmp), true ) * isPred(j); 
         }
         if(ErrorDist==1){
-          g -= dnbinom2( Y(j,i), exp(pred_tmp), var_y, true ) * (1-isPred(j)); 
-          h(i) -= dnbinom2( Y(j,i), exp(pred_tmp), var_y, true ) * isPred(j); 
+          jnll -= dnbinom2( Y(j,i), exp(pred_tmp), var_y, true ) * (1-isPred(j)); 
+          jnll_pred(i) -= dnbinom2( Y(j,i), exp(pred_tmp), var_y, true ) * isPred(j); 
         }
         if(ErrorDist==2){ 
           Tmp = -log( exp(ln_VarInfl_ZI(i)) + 1) + dnbinom2( Y(j,i), exp(pred_tmp), var_y, true );
           if(Y(j,i)==0){ Tmp = log( 1/(1+exp(-ln_VarInfl_ZI(i))) + exp(Tmp) ); }
-          g -= Tmp * (1-isPred(j)); 
-          h(i) -= Tmp * isPred(j); 
+          jnll -= Tmp * (1-isPred(j)); 
+          jnll_pred(i) -= Tmp * isPred(j); 
         }
         if(Y_Report(j,i) > 0.5){
           REPORT( lin_pred(j,i) );
@@ -207,7 +207,7 @@ Type objective_function<Type>::operator() ()
         Mean(k) += Omega(l,k);
       }
       Mean(k) = Mean(k) / Omega.col(k).size();
-      if( Pen_Vec(0)>0.001 ) g += Pen_Vec(0) * pow(Mean(k), 2);
+      if( Pen_Vec(0)>0.001 ) jnll += Pen_Vec(0) * pow(Mean(k), 2);
     }
     REPORT( Mean );
   }
@@ -221,7 +221,7 @@ Type objective_function<Type>::operator() ()
         Cov(k1,k2) += (Omega(l,k1)-Mean(k1)) * (Omega(l,k2)-Mean(k2));
       }
       Cov(k1,k2) = Cov(k1,k2) / Omega.col(k1).size();
-      if( Pen_Vec(1)>0.001 ) g += Pen_Vec(1) * pow(Cov(k1,k2), 2);
+      if( Pen_Vec(1)>0.001 ) jnll += Pen_Vec(1) * pow(Cov(k1,k2), 2);
     }}
     REPORT( Cov );
   }
@@ -256,13 +256,14 @@ Type objective_function<Type>::operator() ()
   for(int k=0;k<n_factors;k++){
     ADREPORT( Psi.row(k) );
   }
-  ADREPORT( h );
-  REPORT( h );
+  ADREPORT( jnll_pred );
+  REPORT( jnll );
+  REPORT( jnll_pred );
   REPORT( ln_mean_y );
   REPORT( Psi );
   REPORT( H );
   REPORT( adj_H );
   if( Options_Vec(0)==1 | Options_Vec(0)==2) REPORT(Lognorm_input);
 
-  return g;
+  return jnll;
 }
