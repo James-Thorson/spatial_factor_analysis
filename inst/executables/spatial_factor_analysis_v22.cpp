@@ -201,6 +201,15 @@ Type objective_function<Type>::operator() ()
     }}
     REPORT( Cov );
   }
+  // Add penalties to increase stiffness -- PsiVal -> 0
+  if( (Pen_Vec(2)>0.001) ){
+    //REPORT( Psi_val.length() );
+    for( int i=0; i<Psi_val.size(); i++){
+      g -= dnorm( Psi_val(i), Type(0.0), Pen_Vec(2), true);
+      //Type tmp = dnorm( Psi_val(i), Type(0.0), Pen_Vec(2), true);
+      //REPORT( tmp );
+    }
+  }
   
   // Reporting
   for(int k=0;k<n_factors;k++){

@@ -5,7 +5,7 @@
 template<class Type>
 Type objective_function<Type>::operator() ()
 {
-  DATA_VECTOR(Options_Vec);
+  DATA_FACTOR(Options_Vec);
   DATA_VECTOR(Pen_Vec);
   DATA_MATRIX(Y);       	// Responses
   DATA_MATRIX(Y_Report);
@@ -140,13 +140,22 @@ Type objective_function<Type>::operator() ()
     }
   }
   
-  // 
-  if( Options_Vec(0)==1 ){
+  // Hyper-distribution for lognormal variance inflation
+  Type Test = 0;
+  if( Options_Vec(0)==1 | Options_Vec(0)==2 ){
     for(int i=0;i<n_species;i++){
     for(int j=0;j<n_stations;j++){
       g -= dnorm( Lognorm_input(j,i), Type(0.0), exp(ln_VarInfl_Lognorm(i)), true );
     }}
+    // Jacobian for log-transformation (only necessary if using REML to integrate across ln_VarInfl_Lognorm)
+    if( Options_Vec(0)==2 ){ 
+      for(int i=0;i<n_species;i++){
+        g -= ln_VarInfl_Lognorm(i);
+        Test += 1;
+      }
+    }
   }
+  REPORT( Test ); 
   
   // Likelihood contribution from observations
   Type Tmp;
@@ -254,7 +263,7 @@ Type objective_function<Type>::operator() ()
   REPORT( Psi );
   REPORT( H );
   REPORT( adj_H );
-  if( Options_Vec(0)==1 ) REPORT(Lognorm_input);
+  if( Options_Vec(0)==1 | Options_Vec(0)==2) REPORT(Lognorm_input);
 
   return g;
 }
