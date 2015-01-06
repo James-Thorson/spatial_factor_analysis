@@ -6,5 +6,5 @@ Date: 2014-10-30
 Author: James Thorson
 Maintainer: James Thorson <James.Thorson@noaa.gov>
 Description: This package implements spatial factor analysis, which replaces factors with Gaussian random fields.  SFA provides a parsimonious (rank-reduced) model for spatial variation of multiple measures, e.g., species densities.
-Depends: R (>= 3.0.0), akima, maps, mapdata, mapproj, maptools, PBSmapping, Correlplot, RandomFields, numDeriv
+Depends: R (>= 3.0.0), akima, maps, mapdata, mapproj, rgeos, maptools, PBSmapping, Correlplot, RandomFields, numDeriv
 License: GPL-2
