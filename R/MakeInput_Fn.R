@@ -34,7 +34,7 @@ function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ObsModel, Vary
     if(ObsModel=="Lognorm_Pois" & Use_REML==FALSE) Data[["Options_Vec"]] = as.integer(1)
   }
   # Parameters
-  if(StartValue=="Default" | is.null(LastRun) ){
+  if(is.null(LastRun) || StartValue=="Default" ){
     if(Version %in% c("spatial_factor_analysis_v18","spatial_factor_analysis_v19") ) Params = list( beta=matrix(0,nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=rep(1,n_factors*n_species-n_factors*(n_factors-1)/2), log_kappa_input=rep(0,ifelse(VaryingKappa==0,1,n_factors)), ln_VarInfl=matrix(-2,nrow=3,ncol=n_species), Omega_input=matrix(rep(0,spde$n.spde*n_factors),ncol=n_factors))
     if(Version %in% "spatial_factor_analysis_v20") Params = list( beta=matrix(0,nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=rep(1,n_factors*n_species-n_factors*(n_factors-1)/2), log_kappa_input=rep(0,ifelse(VaryingKappa==0,1,n_factors)), ln_VarInfl_NB1=NA, ln_VarInfl_NB2=NA, ln_VarInfl_ZI=NA, Omega_input=matrix(rep(0,spde$n.spde*n_factors),ncol=n_factors))
     if(Version %in% "spatial_factor_analysis_v21") Params = list( ln_H_input=c(0,-10,0), beta=matrix(0,nrow=ncol(X),ncol=n_species,byrow=TRUE), Psi_val=rep(1,n_factors*n_species-n_factors*(n_factors-1)/2), log_kappa_input=rep(0,ifelse(VaryingKappa==0,1,n_factors)), ln_VarInfl_NB1=NA, ln_VarInfl_NB2=NA, ln_VarInfl_ZI=NA, Omega_input=matrix(rep(0,spde$n.spde*n_factors),ncol=n_factors))
@@ -84,7 +84,7 @@ function(Version, Y, X, Y_Report=NULL, LastRun=NULL, Loc, isPred, ObsModel, Vary
       if('ln_VarInfl_Lognorm'%in%names(Params)) Params[['ln_VarInfl_Lognorm']] = rep(-5,n_species)
     }
   }
-  if(StartValue=="Last_Run" & !is.null(LastRun)){
+  if(!is.null(LastRun) && StartValue=="Last_Run"){
     Par_last = LastRun$opt$par
     Par_best = LastRun$ParBest
     # names(Save)
