@@ -42,3 +42,15 @@ Further reading
 
 For more details regarding development and testing of this software please see:
 
+* Thorson, J.T., Scheuerell, M., Shelton, A.O., See, K., Skaug, H.J., and Kristensen, K. In press. Spatial factor analysis: a new tool for estimating joint species distributions and correlations in species range. Methods Ecol. Evol.
+
+For more details regarding estimating spatial variation via Gaussian random fields please see:
+
+* Thorson, J.T., Shelton, A.O., Ward, E.J., and Skaug, H. In press. Geostatistical delta-generalized linear mixed models improve precision for estimated abundance indices for West Coast groundfishes. ICES J. Mar. Sci.
+* Thorson, J.T., Skaug, H., Kristensen, K., Shelton, A.O., Ward, E.J., Harms, J., and Benante, J. In press. The importance of spatial models for estimating the strength of density dependence. Ecology. doi: http://dx.doi.org/10.1890/14-0739.1.
+
+For more details regarding Template Model Builder please see:
+
+* Kristensen, K. 2014. TMB: General random effect model builder tool inspired by ADMB. Available from https://github.com/kaskr/adcomp.
+* Kristensen, K., Nielsen, A., Berg, C.W., and Skaug, H. In press. Template Model Builder TMB. J. Stat. Softw.
+
