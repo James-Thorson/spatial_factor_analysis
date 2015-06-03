@@ -1,4 +1,8 @@
 
+# Step 1: Install TMB and INLA packages
+# Step 2: Install SpatialFA package
+devtools::install_github("james-thorson/spatial_factor_analysis")
+
 # Load libraries
 library(TMB)
 library(INLA)
